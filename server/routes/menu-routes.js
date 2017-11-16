@@ -4,14 +4,24 @@ var Sides = require('../models/side')
 var router = require('express').Router()
 
 router.get('/api/menu', (req, res, next)=>{
-    Burgers.find({})
-        .then(burgers => res.send(burgers))
-        .catch(err => res.status(400).send({Error: err}))
+    var menu = {
+        drinks: [],
+        burgers: [],
+        sides: []
+    }
     Drinks.find({})
-        .then(drinks => res.send(drinks))
-        .catch(err => res.status(400).send({Error: err}))
-    Sides.find({})
-        .then(side => res.send(side))
+        .then(drinks => {
+            menu.drinks = drinks
+            Burgers.find({})
+                .then(burgers=>{
+                    menu.burgers = burgers
+                    Sides.find({})
+                        .then(sides=>{
+                            menu.sides = sides
+                            res.send(menu)
+                        })
+                })
+            })
         .catch(err => res.status(400).send({Error: err}))
 })
 
